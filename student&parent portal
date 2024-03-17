@@ -1,0 +1,184 @@
+#include <stdio.h>
+#include <string.h>
+
+// Structure for students
+struct Student {
+    int prn;
+    char passcode[20];
+    char address[100];
+    char blood_group[5];
+    char phone_number[11]; 
+    int grades[3];
+    float attendance[3];
+};
+
+// Structure for faculty
+struct Faculty {
+    char faculty_id[6];
+    char passcode[20];
+    char subject_code[8]; 
+    char faculty_name[51]; 
+    char contact_number[11]; 
+    char email[36]; 
+};
+
+// Structure for parent
+struct Parent {
+    int prn;
+    char passcode[20];
+    char contact_number[11];
+    char email[30];
+};
+
+// Function prototypes
+void studentPortal(struct Student students[], int num_students, struct Parent parents[]);
+void parentPortal(struct Parent parents[], int num_parents, struct Faculty faculties[], int num_faculties);
+void displayFacultyContact(struct Faculty faculties[], int num_faculties, int prn);
+
+// Global arrays
+struct Student students[5] = {
+    {1234, "password234", "Pimpri, Pune", "O+", "9999999999", {34, 55, 67}, {77, 75, 54}},
+    {1235, "password235", "Wakad, Pune", "B-", "8888888888", {78, 21, 89}, {88, 64, 90}},
+    {1236, "password236", "Aundh, Pune", "AB+", "7777777777", {56, 32, 89}, {67, 78, 87}},
+    {1237, "password237", "Baner, Pune", "A-", "6666666666", {74, 42, 24}, {89, 76, 34}},
+    {1238, "password238", "Akurdi, Pune", "O-", "5555555555", {23, 32, 45}, {66, 65, 89}}
+};
+
+struct Parent parents[5] = {
+    {1234, "234password", "2738497482", "parent1@gmail.com"},
+    {1235, "1235password", "7897543234", "parent2@gmail.com"},
+    {1236, "1236password", "5653432123", "parent3@gmail.com"},
+    {1237, "237password", "5566778833", "parent4@gmail.com"},
+    {1238, "238password", "8877665544", "parent5@gmail.com"}
+};
+
+struct Faculty faculties[3] = {
+    {"mary1", "password1", "CSE1101", "Dr. Mary Smith", "1234567890", "marysmith@college.com"},
+    {"max1", "password2", "CSE1102", "Prof. Max Reynolds", "1234567891", "maxreynolds@college.com"},
+    {"amit1", "password3", "CSE1103", "Dr. Amit Kapoor", "1234567892", "amitkapoor@college.com"}
+};
+
+int main() {
+    int choice;
+    do {
+        printf("Welcome to the student management system!\n");
+        printf("1. Student Portal\n");
+        printf("2. Parent Portal\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+                studentPortal(students, 5, parents);
+                break;
+            case 2:
+                parentPortal(parents, 5, faculties, 3);
+                break;
+            case 3:
+                printf("Exiting program\n");
+                break;
+            default:
+                printf("Invalid choice\n");
+        }
+    } while (choice != 3);
+
+    return 0;
+}
+
+void studentPortal(struct Student students[], int num_students, struct Parent parents[]) {
+    int prn;
+    char passcode[20];
+    printf("Enter PRN: ");
+    scanf("%d", &prn);
+    printf("Enter passcode: ");
+    scanf("%s", passcode);
+
+    struct Student *student = NULL;
+    for (int i = 0; i < num_students; i++) {
+        if (students[i].prn == prn && strcmp(students[i].passcode, passcode) == 0) {
+            student = &students[i];
+            break;
+        }
+    }
+
+    if (student != NULL) {
+        printf("Welcome PRN: %d!\n", student->prn);
+        printf("1. Check grades\n");
+        printf("2. Check attendance\n");
+        printf("3. Exit\n");
+        printf("Enter your choice: ");
+        int option;
+        scanf("%d", &option);
+
+        switch (option) {
+            case 1:
+                printf("Grades:\n");
+                for (int i = 0; i < 3; i++) {
+                    printf("Subject %d: %d\n", i + 1, student->grades[i]);
+                }
+                // Alert parent if grades are below 35
+                for (int i = 0; i < 3; i++) {
+                    if (student->grades[i] < 35) {
+                        printf("Alert: Grades below 35 in subject %d\n", i + 1);
+                        printf("Alert sent to parent\n");
+                        printf("\n");
+                        break;
+                    }
+                }
+                break;
+            case 2:
+                printf("Attendance:\n");
+                for (int i = 0; i < 3; i++) {
+                    printf("Subject %d: %.2f%%\n", i + 1, student->attendance[i]);
+                }
+                // Alert parent if attendance is below 75
+                for (int i = 0; i < 3; i++) {
+                    if (student->attendance[i] < 75.0) {
+                        printf("Alert: Attendance below 75%% in subject %d\n", i + 1);
+                        printf("Alert sent to parent\n");
+                        printf("\n");
+                        break;
+                    }
+                }
+                break;
+            case 3:
+                printf("Exiting student portal\n");
+                break;
+            default:
+                printf("Invalid option\n");
+        }
+    } else {
+        printf("Invalid PRN or passcode\n");
+    }
+}
+
+void parentPortal(struct Parent parents[], int num_parents, struct Faculty faculties[], int num_faculties) {
+    int prn;
+    char passcode[20];
+    printf("Enter PRN: ");
+    scanf("%d", &prn);
+    printf("Enter passcode: ");
+    scanf("%s", passcode);
+
+    struct Parent *parent = NULL;
+    for (int i = 0; i < num_parents; i++) {
+        if (parents[i].prn == prn && strcmp(parents[i].passcode, passcode) == 0) {
+            parent = &parents[i];
+            break;
+        }
+    }
+
+    if (parent != NULL) {
+        printf("Welcome parent of PRN: %d!\n", parent->prn);
+        printf("Faculty contact information:\n");
+        for (int i = 0; i < num_faculties; i++) {
+            printf("Faculty Name: %s\n", faculties[i].faculty_name);
+            printf("Contact Number: %s\n", faculties[i].contact_number);
+            printf("Email: %s\n", faculties[i].email);
+            printf("\n");
+        }
+    } else {
+        printf("Invalid PRN or passcode\n");
+    }
+}
